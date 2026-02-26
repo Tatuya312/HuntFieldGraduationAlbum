@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卒業アルバム テンプレート — class of 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Fira+Code:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ── ターミナルスタイル ツールバー ── -->
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <!-- シグナルドット -->
+        <div class="terminal-dots">
+          <span class="dot-red"></span>
+          <span class="dot-yellow"></span>
+          <span class="dot-green"></span>
+        </div>
+        <!-- タイトル（ターミナルプロンプト風） -->
+        <div class="toolbar-title-area">
+          <div class="app-title">
+            <span class="prompt">student@yearbook</span>
+            <span class="cmd">:~ $ </span>
+            <span class="cmd">create </span>
+            <span class="flag">--dpi 350</span>
+            <span class="cmd"> graduation_album</span>
+          </div>
+          <div class="app-spec">// 440mm × 298mm | JPEG | class of 2026</div>
+        </div>
+      </div>
+
+      <div class="toolbar-actions">
+        <button id="btn-bulk"   class="btn btn-bulk"   title="写真を一括アップロード">[ bulk_upload ]</button>
+        <button id="btn-layout" class="btn btn-layout" title="レイアウトを切り替える">[ shuffle ]</button>
+        <!-- 写真枚数コントロール -->
+        <div class="count-control" title="写真の枚数を調整">
+          <button id="btn-count-minus" class="btn-count">−</button>
+          <span id="count-display" class="count-display">15枚</span>
+          <button id="btn-count-plus"  class="btn-count">＋</button>
+        </div>
+        <button id="btn-export" class="btn btn-export" title="350dpi JPEG でエクスポート">./export.sh</button>
+        <button id="btn-reset"  class="btn btn-reset"  title="リセット">rm -rf</button>
+      </div>
+    </header>
+
+    <!-- ── キャンバス ── -->
+    <div class="canvas-wrapper">
+      <div id="template" class="template-canvas">
+        <!-- JS generated -->
+      </div>
+    </div>
+
+    <!-- ── 操作説明 ── -->
+    <div class="instructions">
+      <p>// click slot → upload photo  |  drag & drop OK  |  click text → edit  |  [ shuffle ] → layout  |  −/＋ → photo count  |  <span style="color:rgba(255,80,80,0.7)">赤破線</span>=断裁線 <span style="color:rgba(59,130,246,0.7)">青破線</span>=折り目（エクスポート時非表示）</p>
+    </div>
+
+  </div>
+
+  <!-- hidden inputs -->
+  <input type="file" id="file-input"  accept="image/*" style="display:none">
+  <input type="file" id="bulk-input"  accept="image/*" multiple style="display:none">
+
+  <!-- progress & notify -->
+  <div id="progress-bar"></div>
+  <div id="notify"></div>
+
+  <!-- export overlay -->
+  <div class="export-overlay hidden">
+    <div class="export-modal">
+      <div class="spinner"></div>
+      <p class="export-text">Exporting...</p>
+      <p class="export-subtext">$ render --dpi 350 --format jpeg</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

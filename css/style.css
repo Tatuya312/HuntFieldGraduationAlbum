@@ -1,0 +1,1331 @@
+﻿/* ========================================
+   卒業アルバム テンプレート
+   "Terminal × Scrapbook" Hybrid Design
+   情報系らしい個性 × 手作り温かみ
+   ======================================== */
+
+/* === CSS Custom Properties === */
+:root {
+  --accent-cyan: #00c8aa;
+  --accent-pink: #ff4d78;
+  --accent-yellow: #f5c800;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-green: #22c55e;
+  --ink: #1a1a2e;
+  --ink-muted: #5a5a7a;
+}
+
+/* === Reset & Base === */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: #cdc7b6;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.025) 0,
+      rgba(0, 0, 0, 0.025) 1px,
+      transparent 1px,
+      transparent 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.025) 0,
+      rgba(0, 0, 0, 0.025) 1px,
+      transparent 1px,
+      transparent 40px
+    );
+  color: var(--ink);
+  font-family: "Zen Maru Gothic", sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding-bottom: 30px;
+}
+
+/* ==================== TOOLBAR ==================== */
+.toolbar {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 0;
+  background: #12122a;
+  border-bottom: 2px solid var(--accent-cyan);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  min-height: 50px;
+}
+.toolbar-left {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.terminal-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  border-right: 1px solid #2a2a45;
+}
+.terminal-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-red {
+  background: #ff5f57;
+}
+.dot-yellow {
+  background: #febc2e;
+}
+.dot-green {
+  background: #28c840;
+}
+.toolbar-title-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 18px;
+}
+.app-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  font-family: "Fira Code", "Courier New", monospace;
+  letter-spacing: 0.5px;
+}
+.app-title .prompt {
+  color: var(--accent-green);
+}
+.app-title .cmd {
+  color: #e8eaf0;
+}
+.app-title .flag {
+  color: var(--accent-yellow);
+}
+.app-spec {
+  font-size: 0.68rem;
+  color: #7a7a9a;
+  font-family: "Fira Code", monospace;
+  margin-top: 2px;
+}
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 0 16px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+/* === Buttons === */
+.btn {
+  padding: 7px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: "Fira Code", monospace;
+  letter-spacing: 0.3px;
+}
+.btn-bulk {
+  background: transparent;
+  color: var(--accent-yellow);
+  border-color: rgba(245, 200, 0, 0.4);
+}
+.btn-bulk:hover {
+  background: rgba(245, 200, 0, 0.1);
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 10px rgba(245, 200, 0, 0.2);
+}
+.btn-layout {
+  background: transparent;
+  color: var(--accent-purple);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+.btn-layout:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: var(--accent-purple);
+}
+.btn-export {
+  background: var(--accent-cyan);
+  color: #081410;
+  border-color: var(--accent-cyan);
+  padding: 7px 18px;
+}
+.btn-export:hover {
+  background: #00e0bc;
+  box-shadow: 0 0 16px rgba(0, 200, 170, 0.4);
+  transform: translateY(-1px);
+}
+.btn-reset {
+  background: transparent;
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.35);
+}
+.btn-reset:hover {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: #ff6b6b;
+}
+
+/* === Canvas Wrapper === */
+.canvas-wrapper {
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  padding: 24px 20px 16px;
+}
+
+/* ==================== TEMPLATE CANVAS ==================== */
+.template-canvas {
+  width: 1100px;
+  height: 745px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #eee8d2;
+  background-image:
+    radial-gradient(
+      ellipse at 14% 18%,
+      rgba(255, 240, 195, 0.55) 0%,
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse at 88% 82%,
+      rgba(238, 228, 195, 0.45) 0%,
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(248, 242, 220, 0.25) 0%,
+      transparent 70%
+    ),
+    linear-gradient(155deg, #f2ecdb 0%, #eae4cc 55%, #ede8d0 100%);
+  border-radius: 2px;
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+/* スキャンライン（超薄め） */
+.template-canvas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.008) 3px,
+    rgba(0, 0, 0, 0.008) 4px
+  );
+}
+
+/* キャンバス内ターミナルヘッダーバー */
+.canvas-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background: rgba(18, 18, 42, 0.93);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 10px;
+  z-index: 150;
+  pointer-events: none;
+  border-bottom: 1px solid rgba(0, 200, 170, 0.28);
+}
+.canvas-header .ch-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 6px;
+}
+.canvas-header .ch-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.canvas-header .ch-dot-r {
+  background: #ff5f57;
+}
+.canvas-header .ch-dot-y {
+  background: #febc2e;
+}
+.canvas-header .ch-dot-g {
+  background: #28c840;
+}
+.canvas-header .ch-prompt {
+  font-family: "Fira Code", monospace;
+  font-size: 10px;
+  color: var(--accent-green);
+}
+.canvas-header .ch-cmd {
+  font-family: "Fira Code", monospace;
+  font-size: 10px;
+  color: #e8eaf0;
+}
+.canvas-header .ch-comment {
+  font-family: "Fira Code", monospace;
+  font-size: 10px;
+  color: rgba(0, 200, 170, 0.55);
+  margin-left: auto;
+}
+.canvas-header .ch-badge {
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 200, 170, 0.38);
+  padding: 1px 7px;
+  border-radius: 2px;
+}
+.canvas-header .ch-gh-link {
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  border: 1px solid rgba(0, 200, 170, 0.45);
+  padding: 1px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.3px;
+  opacity: 0.88;
+  transition: opacity 0.18s, background 0.18s, box-shadow 0.18s;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+.canvas-header .ch-gh-link:hover {
+  opacity: 1;
+  background: rgba(0, 200, 170, 0.12);
+  box-shadow: 0 0 8px rgba(0, 200, 170, 0.3);
+}
+
+/* 背景グリッド */
+.bg-grid {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 27px,
+      rgba(0, 200, 170, 0.035) 27px,
+      rgba(0, 200, 170, 0.035) 28px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 54px,
+      rgba(0, 200, 170, 0.02) 54px,
+      rgba(0, 200, 170, 0.02) 55px
+    );
+}
+
+/* コーナーブラケット */
+.corner-bracket {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 160;
+}
+.corner-bracket::before,
+.corner-bracket::after {
+  content: "";
+  position: absolute;
+  background: var(--accent-cyan);
+  opacity: 0.5;
+}
+.corner-bracket.tl {
+  top: 46px;
+  left: 8px;
+}
+.corner-bracket.tr {
+  top: 46px;
+  right: 8px;
+}
+.corner-bracket.bl {
+  bottom: 8px;
+  left: 8px;
+}
+.corner-bracket.br {
+  bottom: 8px;
+  right: 8px;
+}
+.corner-bracket::before {
+  width: 100%;
+  height: 2px;
+  top: 0;
+  left: 0;
+}
+.corner-bracket::after {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+.corner-bracket.tr::before {
+  left: auto;
+  right: 0;
+}
+.corner-bracket.tr::after {
+  left: auto;
+  right: 0;
+}
+.corner-bracket.bl::before {
+  top: auto;
+  bottom: 0;
+}
+.corner-bracket.bl::after {
+  top: auto;
+  bottom: 0;
+}
+.corner-bracket.br::before {
+  top: auto;
+  bottom: 0;
+  left: auto;
+  right: 0;
+}
+.corner-bracket.br::after {
+  top: auto;
+  bottom: 0;
+  left: auto;
+  right: 0;
+}
+
+/* ビネット */
+.vignette-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 52%,
+    transparent 48%,
+    rgba(100, 80, 30, 0.07) 100%
+  );
+}
+
+/* ==================== PHOTO SLOTS ==================== */
+/* スロット本体に grab カーソル（どこでもドラッグ可能なことを示唇） */
+.photo-slot {
+  position: absolute;
+  cursor: grab;
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+  transform: rotate(var(--rot, 0deg));
+}
+.photo-slot:active {
+  cursor: grabbing;
+}
+.photo-slot.dragging {
+  cursor: grabbing !important;
+}
+/* 空スロットのプレースホルダーは pointer */
+.photo-slot .placeholder {
+  cursor: pointer;
+}
+.photo-slot:hover {
+  transform: rotate(var(--rot, 0deg)) scale(1.05) !important;
+  filter: brightness(1.04);
+  z-index: 200 !important;
+}
+.photo-slot .photo-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.photo-slot .photo-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* ── Polaroid ── */
+.frame-polaroid {
+  background: #fffdf8;
+  padding: 5px 5px 26px;
+  box-shadow:
+    1px 2px 4px rgba(0, 0, 0, 0.1),
+    3px 5px 14px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(180, 160, 120, 0.2);
+}
+.frame-polaroid::after {
+  content: "";
+  position: absolute;
+  bottom: 9px;
+  left: 12%;
+  width: 76%;
+  height: 1px;
+  background: rgba(150, 130, 90, 0.18);
+  pointer-events: none;
+}
+.frame-polaroid .photo-container {
+  background: #ddd9d0;
+}
+
+/* ── Tape ── */
+.frame-tape {
+  padding: 3px;
+  background: #fefef9;
+  box-shadow:
+    1px 2px 5px rgba(0, 0, 0, 0.12),
+    3px 5px 14px rgba(0, 0, 0, 0.08);
+}
+.frame-tape .photo-container {
+  background: #e0ddd5;
+}
+.tape-strip {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 54%;
+  height: 18px;
+  z-index: 10;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  border-radius: 1px;
+  opacity: 0.78;
+}
+
+/* ── Shadow ── */
+.frame-shadow {
+  padding: 4px;
+  background: #fffef9;
+  box-shadow:
+    1px 2px 4px rgba(0, 0, 0, 0.1),
+    4px 6px 20px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(180, 160, 120, 0.15);
+  border-radius: 2px;
+}
+.frame-shadow .photo-container {
+  border-radius: 1px;
+  background: #e5e1d8;
+}
+
+/* ── Terminal Frame ── */
+.frame-terminal {
+  padding: 0;
+  background: #12122a;
+  border: 1.5px solid rgba(0, 200, 170, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(0, 200, 170, 0.12),
+    2px 4px 16px rgba(0, 0, 0, 0.38),
+    0 0 20px rgba(0, 200, 170, 0.06);
+  border-radius: 3px;
+}
+.frame-terminal .photo-container {
+  background: #0f1620;
+  border-radius: 2px;
+  margin-top: 14px;
+  height: calc(100% - 14px);
+}
+.frame-terminal:hover {
+  border-color: var(--accent-cyan);
+  box-shadow:
+    0 0 0 1px var(--accent-cyan),
+    2px 4px 22px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(0, 200, 170, 0.14);
+}
+.terminal-tab {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: #0a1022;
+  border-bottom: 1px solid rgba(0, 200, 170, 0.22);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 6px;
+  pointer-events: none;
+  z-index: 2;
+}
+.terminal-tab .t-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.terminal-tab .t-dot-r {
+  background: rgba(255, 95, 87, 0.7);
+}
+.terminal-tab .t-dot-y {
+  background: rgba(254, 188, 46, 0.7);
+}
+.terminal-tab .t-dot-g {
+  background: rgba(40, 200, 64, 0.7);
+}
+.terminal-tab .t-label {
+  font-family: "Fira Code", monospace;
+  font-size: 6px;
+  color: rgba(0, 200, 170, 0.32);
+  margin-left: 2px;
+}
+
+/* ── Placeholder ── */
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed rgba(150, 125, 75, 0.26);
+  background: rgba(200, 180, 135, 0.06);
+  transition: all 0.22s;
+}
+.photo-slot:hover .placeholder {
+  background: rgba(0, 200, 170, 0.055);
+  border-color: rgba(0, 200, 170, 0.32);
+}
+.photo-slot.drag-over .placeholder {
+  background: rgba(34, 197, 94, 0.09);
+  border-color: rgba(34, 197, 94, 0.42);
+}
+.plus-icon {
+  font-size: 24px;
+  color: rgba(140, 115, 70, 0.3);
+  line-height: 1;
+  font-weight: 300;
+  transition: color 0.2s;
+}
+.photo-slot:hover .plus-icon {
+  color: var(--accent-cyan);
+}
+.frame-terminal .plus-icon {
+  color: rgba(0, 200, 170, 0.35);
+}
+.frame-terminal .placeholder {
+  background: rgba(0, 200, 170, 0.03);
+  border-color: rgba(0, 200, 170, 0.18);
+}
+.slot-number {
+  font-size: 8px;
+  color: rgba(140, 115, 70, 0.26);
+  margin-top: 4px;
+  font-family: "Fira Code", monospace;
+  letter-spacing: 1px;
+}
+.frame-terminal .slot-number {
+  color: rgba(0, 200, 170, 0.28);
+}
+
+/* ── Remove Btn ── */
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent-pink);
+  color: white;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 300;
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.28);
+  transition:
+    background 0.15s,
+    transform 0.15s;
+  font-family: Arial, sans-serif;
+}
+.remove-btn:hover {
+  background: #e0204e;
+  transform: scale(1.2);
+}
+.photo-slot.has-photo:hover .remove-btn {
+  display: flex;
+}
+
+/* ── z-order コントロール ── */
+.z-ctrl {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: none;
+  flex-direction: row;
+  gap: 2px;
+  z-index: 300;
+}
+.photo-slot:hover .z-ctrl {
+  display: flex;
+}
+.z-ctrl button {
+  background: rgba(26, 26, 46, 0.88);
+  color: var(--accent-cyan, #00c8aa);
+  border: 1px solid rgba(0, 200, 170, 0.5);
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+.z-ctrl button:hover {
+  background: rgba(0, 200, 170, 0.3);
+  transform: scale(1.15);
+}
+
+/* ── 4隅リサイズハンドル ── */
+.resize-handle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: 250;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.photo-slot:hover .resize-handle {
+  opacity: 1;
+}
+.resize-tl {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+.resize-tr {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+.resize-bl {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+}
+.resize-br {
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize;
+}
+.resize-tl::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid var(--accent-cyan);
+  border-top: 2px solid var(--accent-cyan);
+  opacity: 0.7;
+}
+.resize-tr::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--accent-cyan);
+  border-top: 2px solid var(--accent-cyan);
+  opacity: 0.7;
+}
+.resize-bl::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid var(--accent-cyan);
+  border-bottom: 2px solid var(--accent-cyan);
+  opacity: 0.7;
+}
+.resize-br::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--accent-cyan);
+  border-bottom: 2px solid var(--accent-cyan);
+  opacity: 0.7;
+}
+.photo-slot.resizing {
+  outline: 1.5px dashed var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+/* ── 移動ハンドル ── */
+.move-handle {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  z-index: 260;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--accent-cyan);
+  background: rgba(26, 26, 46, 0.88);
+  border: 1px solid rgba(0, 200, 170, 0.5);
+  border-radius: 3px;
+  user-select: none;
+  transition: background 0.15s;
+}
+.move-handle:hover {
+  background: rgba(0, 200, 170, 0.3);
+}
+.move-handle:active {
+  cursor: grabbing;
+}
+.photo-slot:hover .move-handle {
+  display: flex;
+}
+.photo-slot.dragging {
+  outline: 1.5px dashed var(--accent-yellow);
+  outline-offset: 2px;
+  opacity: 0.85;
+}
+.template-canvas.exporting .move-handle {
+  display: none !important;
+}
+.template-canvas.exporting .z-ctrl,
+.template-canvas.exporting .resize-handle {
+  display: none !important;
+}
+
+/* ==================== DECORATIONS ==================== */
+.decoration {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.deco-watermark {
+  font-weight: 900;
+  letter-spacing: 8px;
+}
+.deco-code {
+  font-family: "Fira Code", monospace;
+}
+.deco-sticker {
+  font-weight: 700;
+  box-shadow:
+    1px 2px 0 rgba(0, 0, 0, 0.13),
+    2px 4px 8px rgba(0, 0, 0, 0.08);
+}
+.deco-bubble {
+  font-weight: 700;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.08);
+}
+.deco-line {
+  height: 3px;
+  opacity: 0.48;
+  border-radius: 2px;
+  font-size: 0;
+}
+.deco-emoji {
+  line-height: 1;
+  filter: drop-shadow(1px 2px 1px rgba(0, 0, 0, 0.1));
+}
+.deco-terminal {
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  color: var(--accent-cyan);
+  background: rgba(18, 18, 42, 0.9);
+  border: 1px solid rgba(0, 200, 170, 0.28);
+  padding: 7px 10px;
+  border-radius: 3px;
+  line-height: 1.75;
+  white-space: pre;
+  box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.22);
+}
+.deco-terminal .t-prompt {
+  color: var(--accent-green);
+}
+.deco-terminal .t-output {
+  color: rgba(232, 234, 240, 0.90);
+}
+.deco-terminal .t-comment {
+  color: #6ee7b7;
+  opacity: 0.88;
+}
+.deco-sticky {
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  line-height: 1.55;
+  padding: 10px 12px;
+  box-shadow:
+    3px 4px 0 rgba(0, 0, 0, 0.1),
+    5px 6px 16px rgba(0, 0, 0, 0.07);
+  white-space: pre-line;
+}
+
+/* === Editable Text === */
+.editable-text {
+  position: absolute;
+  cursor: text;
+  user-select: text;
+  pointer-events: auto;
+  outline: none;
+  min-width: 30px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+  white-space: nowrap;
+}
+.editable-text:hover {
+  background: rgba(245, 200, 0, 0.14);
+}
+.editable-text:focus {
+  background: rgba(245, 200, 0, 0.2);
+  box-shadow: 0 0 0 2px rgba(245, 200, 0, 0.32);
+}
+.template-canvas.exporting .editable-text {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* === タイトルエリア 個別スタイル === */
+/* txt-title: 左に青ボーダーアクセント */
+#txt-title {
+  padding-left: 8px;
+  border-left: 3px solid rgba(59, 130, 246, 0.65);
+  border-radius: 0 3px 3px 0;
+}
+/* txt-dept: タイトルとの区切りに細ライン */
+#txt-dept {
+  padding-left: 8px;
+  border-left: 3px solid rgba(124, 58, 237, 0.50);
+  border-radius: 0 3px 3px 0;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+/* txt-date: ターミナル入力風の微妙な枠 */
+#txt-date {
+  padding-left: 8px;
+  border-left: 3px solid rgba(5, 150, 105, 0.55);
+  border-radius: 0 3px 3px 0;
+  letter-spacing: 0.5px;
+}
+/* エクスポート時は装飾を消す */
+.template-canvas.exporting #txt-title,
+.template-canvas.exporting #txt-dept,
+.template-canvas.exporting #txt-date {
+  border-left: none !important;
+  padding-left: 2px !important;
+}
+
+/* === テキストカラーピッカーツールバー === */
+.text-toolbar {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 0;
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 3px;
+  background: rgba(18, 18, 42, 0.97);
+  border: 1px solid rgba(0, 200, 170, 0.38);
+  border-radius: 5px;
+  padding: 5px 7px;
+  z-index: 9999;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  user-select: none;
+  cursor: default;
+}
+.editable-text:hover .text-toolbar,
+.editable-text:focus-within .text-toolbar {
+  display: flex;
+}
+.tc-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  transition:
+    transform 0.12s,
+    border-color 0.12s;
+}
+.tc-swatch:hover {
+  transform: scale(1.35);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+.tc-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(0, 200, 170, 0.25);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+.tc-input {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid rgba(0, 200, 170, 0.45);
+  border-radius: 3px;
+  padding: 1px;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0;
+}
+.template-canvas.exporting .text-toolbar {
+  display: none !important;
+}
+
+/* ── Pin ── */
+.pin {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  z-index: 160;
+  pointer-events: none;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.32),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.22);
+}
+.pin::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.48);
+  border-radius: 50%;
+}
+
+/* === Layout Badge === */
+.layout-badge {
+  position: absolute;
+  top: 46px;
+  right: 14px;
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  color: rgba(0, 200, 170, 0.65);
+  z-index: 155;
+  pointer-events: none;
+}
+
+/* === GitHub ラベル（ヘッダーバー内リンクへ移動済み → .ch-gh-link を使用） */
+
+/* === Instructions === */
+.instructions {
+  padding: 8px 20px;
+  text-align: center;
+}
+.instructions p {
+  font-size: 0.75rem;
+  color: rgba(100, 95, 80, 0.72);
+}
+
+/* === Progress Bar === */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+  width: 0%;
+  transition: width 0.3s;
+  z-index: 9999;
+}
+
+/* === Notification === */
+#notify {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #12122a;
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 200, 170, 0.38);
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: "Fira Code", monospace;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 9998;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.32);
+}
+#notify.show {
+  opacity: 1;
+}
+
+/* === Export Overlay === */
+.export-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 16, 38, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+}
+.export-overlay.hidden {
+  display: none;
+}
+.export-modal {
+  text-align: center;
+  padding: 36px 54px;
+  background: #12122a;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 200, 170, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(0, 200, 170, 0.1),
+    0 16px 60px rgba(0, 0, 0, 0.55);
+}
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(0, 200, 170, 0.15);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 14px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.export-text {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e8eaf0;
+  margin-bottom: 5px;
+}
+.export-subtext {
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  font-family: "Fira Code", monospace;
+}
+
+/* === Responsive === */
+@media (max-width: 1160px) {
+  .canvas-wrapper {
+    justify-content: flex-start;
+    padding: 16px 10px;
+  }
+}
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 8px 10px;
+  }
+  .toolbar-actions {
+    padding: 8px 10px;
+    justify-content: center;
+    width: 100%;
+  }
+  .btn {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+}
+
+/* ==================== SAFE ZONE / FOLD GUIDE ====================
+   ルール準拠: 断裁線・折り曲げ線・3mm余白ガイド
+   編集時のみ表示 → .exporting 中は非表示
+   ==================== */
+.safe-zone {
+  position: absolute;
+  /* 3mm = 3/440*1100 ≈ 7.5px left/right, 3/298*745 ≈ 7.5px top/bottom, ヘッダー38px分追加 */
+  inset: 46px 8px 8px 8px;
+  border: 1.5px dashed rgba(255, 80, 80, 0.45);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 190;
+  box-shadow: inset 0 0 0 1px rgba(255, 80, 80, 0.12);
+}
+.safe-zone::before {
+  content: "⚠ 断裁線: この内側に重要なものを配置";
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  color: rgba(255, 80, 80, 0.6);
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* 中央折り曲げ / 綴じ目（物理的な製本クリースの見た目） */
+.fold-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 5;
+  /* 製本時の影・クリース効果 */
+  background: linear-gradient(
+    to right,
+    rgba(80, 60, 30, 0.1) 0%,
+    rgba(180, 155, 110, 0.06) 30%,
+    rgba(255, 248, 235, 0.1) 50%,
+    rgba(180, 155, 110, 0.06) 70%,
+    rgba(80, 60, 30, 0.08) 100%
+  );
+  box-shadow:
+    -2px 0 6px rgba(80, 60, 30, 0.1),
+    2px 0 6px rgba(80, 60, 30, 0.07);
+}
+/* 編集時のみ: 折り目ガイドラベル（dashed線は細く目立たなく） */
+.fold-line::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 38px;
+  width: 0;
+  height: calc(100% - 46px);
+  border-left: 1px dashed rgba(59, 130, 246, 0.25);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* 左右ページ背景: 製本時の光の当たり方を再現（見開き中央に向かって影） */
+.page-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+.page-bg-left {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 252, 240, 0) 60%,
+    rgba(80, 60, 30, 0.05) 90%,
+    rgba(40, 25, 10, 0.09) 100%
+  );
+}
+.page-bg-right {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    rgba(255, 252, 240, 0) 60%,
+    rgba(80, 60, 30, 0.05) 90%,
+    rgba(40, 25, 10, 0.09) 100%
+  );
+}
+
+/* ページラベル（編集ガイド: P.01 / P.02） */
+.page-label {
+  position: absolute;
+  bottom: 12px;
+  font-family: "Fira Code", monospace;
+  font-size: 8px;
+  color: rgba(59, 130, 246, 0.45);
+  z-index: 191;
+  pointer-events: none;
+  letter-spacing: 1px;
+}
+.page-label-left {
+  right: 52%;
+}
+.page-label-right {
+  left: 52%;
+}
+/* エクスポート中はガイドを完全に隠す（canvas-header・page-bg はエクスポートに含める） */
+.template-canvas.exporting .safe-zone,
+.template-canvas.exporting .fold-line,
+.template-canvas.exporting .bg-grid,
+.template-canvas.exporting .corner-bracket,
+.template-canvas.exporting .vignette-overlay,
+.template-canvas.exporting .layout-badge,
+.template-canvas.exporting .page-label,
+.template-canvas.exporting .pin {
+  display: none !important;
+}
+
+/* === 写真枚数コントロール === */
+.count-control {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid rgba(0, 200, 170, 0.35);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.btn-count {
+  background: transparent;
+  color: var(--accent-cyan);
+  border: none;
+  border-radius: 0;
+  padding: 6px 10px;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  font-family: monospace;
+  transition: background 0.15s;
+}
+.btn-count:hover {
+  background: rgba(0, 200, 170, 0.12);
+}
+.count-display {
+  padding: 0 9px;
+  font-family: "Fira Code", monospace;
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  min-width: 46px;
+  text-align: center;
+  border-left: 1px solid rgba(0, 200, 170, 0.2);
+  border-right: 1px solid rgba(0, 200, 170, 0.2);
+  line-height: 30px;
+  height: 30px;
+  white-space: nowrap;
+}
